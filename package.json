@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-sse-chat-example",
+  "version": "1.0.0",
+  "description": "Nodejs and SSE based chat example",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Tominov Sergey",
+  "devDependencies": {
+    "@types/node": "^20.2.3",
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {}
+}

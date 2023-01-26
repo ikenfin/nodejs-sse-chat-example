@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <script>
+      const baseUrl = `${location.protocol}//${location.host}${location.pathname}`
+
+      document.addEventListener('DOMContentLoaded', () => {
+        let es = null
+        // links to html elements here
+        const connectBtn = document.querySelector('#connect')
+        const disconnectBtn = document.querySelector('#disconnect')
+        const log = document.querySelector('#log')
+        const message = document.querySelector('#message')
+        const nickname = document.querySelector('#nick')
+
+        // ugly helper fn
+        const refreshButtons = () => {
+          if (!es) {
+            disconnectBtn.setAttribute('disabled', '')
+            connectBtn.removeAttribute('disabled')
+            nickname.removeAttribute('disabled')
+            message.setAttribute('disabled', '')
+          }
+          else {
+            disconnectBtn.removeAttribute('disabled')
+            connectBtn.setAttribute('disabled', '')
+            nickname.setAttribute('disabled', '')
+            message.removeAttribute('disabled')
+          }
+        }
+
+        // connect to "chat"
+        connectBtn.addEventListener('click', () => {
+          es = new EventSource(`${baseUrl}events/subscribe`)
+          
+          refreshButtons()
+
+          es.addEventListener('message', (event) => {
+            const { nick, message } = JSON.parse(event.data);
+
+            if (message) {
+              // xss possible here:)
+              log.innerHTML += `<div class="bg-gray-100 even:bg-white p-2"><strong>${nick}</strong>&nbsp;${message}</div>`
+            }
+          })
+        })
+
+        // disconnect
+        disconnectBtn.addEventListener('click', () => {
+          es.close()
+          es = null
+          log.innerHTML = ''
+          refreshButtons()
+        })
+
+        // send message
+        message.addEventListener('keydown', (event) => {
+          if (event.keyCode === 13) {
+            event.preventDefault()
+            
+            const nick = encodeURIComponent(nickname.value)
+            const msg = encodeURIComponent(event.target.value)
+            const url = [
+              baseUrl,
+              'events/fire',
+              '?',
+              `message=${msg}&nick=${nick}`
+            ].join('')
+
+            fetch(url).then(() => message.value = '')
+
+            refreshButtons()
+          }
+        })
+
+        // initial setup our buttons state
+        refreshButtons()
+      })
+    </script>
+  </head>
+
+  <body>
+      <div class="prose mx-4">
+        <div class=""><h1>SSE-based chat example</h1></div>
+
+        <div class="mt-4">
+          <button class="px-4 py-2 font-semibold text-sm bg-green-600 disabled:bg-gray-500 text-white rounded-full shadow-sm" id="connect">Connect</button>
+          <button class="px-4 py-2 font-semibold text-sm bg-red-600 disabled:bg-gray-500 text-white rounded-full shadow-sm" id="Disconnect">Disconnect</button>
+        </div>
+        <div class="mt-4">
+          <input type="text" id="nick" placeholder="nick" />
+        </div>
+        <div class="my-4" id="log">Log:</div>
+        <input class="w-full" type="text" id="message" placeholder="message" />
+      </div>
+  </body>
+</html>
