@@ -36,11 +36,20 @@
           refreshButtons()
 
           es.addEventListener('message', (event) => {
-            const { nick, message } = JSON.parse(event.data);
+            const { nick = '%username%', message } = JSON.parse(event.data);
 
             if (message) {
-              // xss possible here:)
-              log.innerHTML += `<div class="bg-gray-100 even:bg-white p-2"><strong>${nick}</strong>&nbsp;${message}</div>`
+              const containerElement = document.createElement('div')
+              containerElement.classList.add('bg-gray-100 even:bg-white p-2')
+              const nickElement = document.createElement('strong')
+              nickElement.innerText = nick
+              const messageElement = document.createElement('span')
+              messageElement.innerText = `&nbsp; ${message}`
+
+              containerElement.appendChild(nickElement)
+              containerElement.appendChild(messageElement)
+
+              log.appendChild(containerElement)
             }
           })
         })
