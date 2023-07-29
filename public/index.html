@@ -18,14 +18,14 @@
           if (!es) {
             disconnectBtn.setAttribute('disabled', '')
             connectBtn.removeAttribute('disabled')
-            nickname.removeAttribute('disabled')
-            message.setAttribute('disabled', '')
+            message.classList.add('hidden')
+            nickname.classList.remove('hidden')
           }
           else {
             disconnectBtn.removeAttribute('disabled')
             connectBtn.setAttribute('disabled', '')
-            nickname.setAttribute('disabled', '')
-            message.removeAttribute('disabled')
+            nickname.classList.add('hidden')
+            message.classList.remove('hidden')
           }
         }
 
@@ -90,7 +90,7 @@
         <div class="mt-4">
           <input type="text" id="nick" placeholder="nick" />
         </div>
-        <div class="my-4" id="log">Log:</div>
+        <div class="my-4" id="log"></div>
         <input class="w-full" type="text" id="message" placeholder="message" />
       </div>
   </body>
